@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import Navbar from "@/components/navbar/Navbar";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,7 +26,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <meta name="apple-mobile-web-app-title" content="Ukrillic" />
+      </head>
+      
+      <body className="max-w-6xl mx-auto min-h-full flex flex-col selection:bg-primary/20">
+        <Navbar />
+
+        <main className="w-full mx-auto px-6 py-10 flex-1">{children}</main>
+      </body>
     </html>
   );
 }
