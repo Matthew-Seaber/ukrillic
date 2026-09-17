@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #dedddc;
+  --background: #f1ede8;
   --foreground: #171717;
   --primary: #464ce1;
 }
@@ -13,6 +13,7 @@
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-ibm-plex-sans: var(--font-ibm-plex-sans);
 }
 
 body {

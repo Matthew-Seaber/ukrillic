@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 
-import Navbar from "@/components/navbar/Navbar";
+import Navbar from "@/components/page-structures/Navbar";
+import Footer from "@/components/page-structures/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -11,6 +12,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const IBMPlexSans = IBM_Plex_Sans({
+  variable: "--font-ibm-plex-sans",
   subsets: ["latin"],
 });
 
@@ -24,16 +30,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${IBMPlexSans.variable} h-full antialiased`}
     >
       <head>
         <meta name="apple-mobile-web-app-title" content="Ukrillic" />
       </head>
-      
+
       <body className="max-w-6xl mx-auto min-h-full flex flex-col selection:bg-primary/20">
         <Navbar />
 
         <main className="w-full mx-auto px-6 py-10 flex-1">{children}</main>
+
+        <Footer />
       </body>
     </html>
   );
