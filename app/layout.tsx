@@ -39,7 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="max-w-6xl mx-auto min-h-full flex flex-col selection:bg-primary/20">
         <Navbar />
 
-        <main className="w-full mx-auto px-6 py-10 flex-1">{children}</main>
+        <main className="w-full mx-auto mt-2 px-6 py-10 flex-1">{children}</main>
 
         <Footer />
       </body>

@@ -111,7 +111,7 @@ export default function Home() {
       </div>
 
       <div className="relative w-full min-h-84 grid grid-cols-2 border rounded-2xl overflow-hidden shadow-lg">
-        <div className="flex flex-col justify-between gap-4 border-r p-8">
+        <div className="flex flex-col justify-between gap-4 border-r p-4 md:p-8">
           <div className="flex flex-col gap-4">
             <h3 className="font-ibm-plex-sans font-semibold text-lg text-primary">
               ENGLISH (LATIN)
@@ -179,12 +179,12 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="absolute size-14 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary rounded-full flex items-center justify-center">
-          <ArrowRight className="size-8 text-white" />
+        <div className="absolute size-8 md:size-14 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary rounded-full flex items-center justify-center">
+          <ArrowRight className="size-5 md:size-8 text-white" />
         </div>
 
-        <div className="flex flex-col gap-4 p-8">
-          <div className="flex flex-row items-center justify-between gap-4">
+        <div className="flex flex-col gap-4 p-4 md:p-8">
+          <div className="flex flex-row items-center justify-between gap-2">
             <h3 className="font-ibm-plex-sans font-semibold text-lg text-primary">
               UKRAINIAN (CYRILLIC)
             </h3>
