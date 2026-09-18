@@ -31,6 +31,7 @@ export const WordMap: Record<string, string> = {
 
   j: "й",
 
+  c: "к",
   k: "к",
 
   l: "л",

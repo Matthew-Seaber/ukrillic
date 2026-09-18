@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import { WordMap } from "@/lib/transliteration-word-map";
+import { transliterateWord } from "@/lib/transliterate";
 
 import { Separator } from "@/components/ui/separator";
 import { ArrowRight } from "lucide-react";
@@ -12,11 +12,35 @@ export default function Home() {
   const [transliterationOptions, setTransliterationOptions] = useState<
     string[]
   >([]);
-  const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(
+    null,
+  );
   const [cyrillicText, setCyrillicText] = useState("");
 
+  const selectTransliterationOption = useCallback(() => {
+    const selectedOption = transliterationOptions[selectedOptionIndex ?? 0];
+
+    if (!selectedOption) return;
+
+    setCyrillicText((prev) =>
+      prev === "" ? selectedOption : prev + " " + selectedOption,
+    );
+
+    setLatinText("");
+    setTransliterationOptions([]);
+    setSelectedOptionIndex(null);
+  }, [transliterationOptions, selectedOptionIndex]);
+
   useEffect(() => {
-    const transliterateWord = (word: string) => {};
+    if (!latinText.trim()) {
+      setTransliterationOptions([]);
+      setSelectedOptionIndex(null);
+      return;
+    }
+
+    const cyrillicOptions = transliterateWord(latinText.trim());
+    setTransliterationOptions(cyrillicOptions);
+    setSelectedOptionIndex(0);
   }, [latinText]);
 
   useEffect(() => {
@@ -30,18 +54,20 @@ export default function Home() {
         if (event.key === "Enter" || event.key === "Tab" || event.key === " ") {
           event.preventDefault();
 
-          setCyrillicText(
-            (prev) => prev + " " + transliterationOptions[selectedOptionIndex],
-          );
+          selectTransliterationOption();
         } else if (event.key === "ArrowUp") {
           event.preventDefault();
 
-          setSelectedOptionIndex((prev) => Math.max(prev - 1, 0));
+          setSelectedOptionIndex((prev) =>
+            prev === null ? 0 : Math.max(prev - 1, 0),
+          );
         } else if (event.key === "ArrowDown") {
           event.preventDefault();
 
           setSelectedOptionIndex((prev) =>
-            Math.min(prev + 1, transliterationOptions.length - 1),
+            prev === null
+              ? 0
+              : Math.min(prev + 1, transliterationOptions.length - 1),
           );
         }
 
@@ -56,7 +82,12 @@ export default function Home() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  });
+  }, [
+    selectTransliterationOption,
+    transliterationOptions,
+    selectedOptionIndex,
+    cyrillicText,
+  ]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-12">
@@ -91,7 +122,10 @@ export default function Home() {
                   {transliterationOptions.map((option, index) => (
                     <p
                       key={index}
-                      className={`w-full p-2 rounded-md cursor-default ${index === selectedOptionIndex ? "bg-primary/40" : ""}`}
+                      className={`w-full p-2 rounded-md cursor-default hover:bg-primary/20 ${index === selectedOptionIndex ? "bg-primary/40" : ""}`}
+                      onClick={() => {
+                        selectTransliterationOption();
+                      }}
                     >
                       {option}
                     </p>
@@ -103,7 +137,9 @@ export default function Home() {
                 <p
                   className="w-full p-2 text-foreground/40 rounded-md cursor-default hover:bg-foreground/10"
                   onClick={() => {
-                    setCyrillicText((prev) => prev + " " + latinText);
+                    setCyrillicText((prev) =>
+                      prev === "" ? latinText : " " + latinText,
+                    );
                     setLatinText("");
                   }}
                 >
