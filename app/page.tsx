@@ -1,12 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import { WordMap } from "@/lib/transliteration-word-map";
+
+import { Separator } from "@/components/ui/separator";
 import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   const [latinText, setLatinText] = useState("");
+  const [transliterationOptions, setTransliterationOptions] = useState<
+    string[]
+  >([]);
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
   const [cyrillicText, setCyrillicText] = useState("");
+
+  useEffect(() => {
+    const transliterateWord = (word: string) => {};
+  }, [latinText]);
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      const activeElement = document.activeElement as HTMLElement;
+
+      if (
+        activeElement.tagName === "INPUT" ||
+        activeElement.isContentEditable
+      ) {
+        if (event.key === "Enter" || event.key === "Tab" || event.key === " ") {
+          event.preventDefault();
+
+          setCyrillicText(
+            (prev) => prev + " " + transliterationOptions[selectedOptionIndex],
+          );
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+
+          setSelectedOptionIndex((prev) => Math.max(prev - 1, 0));
+        } else if (event.key === "ArrowDown") {
+          event.preventDefault();
+
+          setSelectedOptionIndex((prev) =>
+            Math.min(prev + 1, transliterationOptions.length - 1),
+          );
+        }
+
+        return;
+      }
+
+      const inputBox = document.getElementById(
+        "latin-input",
+      ) as HTMLInputElement | null;
+      inputBox?.focus();
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
 
   return (
     <div className="flex flex-col items-center justify-center gap-12">
@@ -27,6 +77,7 @@ export default function Home() {
             </h3>
 
             <input
+              id="latin-input"
               type="text"
               placeholder="Enter text here..."
               value={latinText}
@@ -34,9 +85,32 @@ export default function Home() {
               className="text-3xl pb-1 focus:border-b-4 border-primary outline-none"
             />
 
-            {latinText && <div className="absolute">
-              
-              </div>}
+            {latinText && (
+              <div className="w-96 absolute flex flex-col gap-2 font-ibm-plex-sans font-semibold">
+                <div className="w-full flex flex-col gap-1">
+                  {transliterationOptions.map((option, index) => (
+                    <p
+                      key={index}
+                      className={`w-full p-2 rounded-md cursor-default ${index === selectedOptionIndex ? "bg-primary/40" : ""}`}
+                    >
+                      {option}
+                    </p>
+                  ))}
+                </div>
+
+                <Separator />
+
+                <p
+                  className="w-full p-2 text-foreground/40 rounded-md cursor-default hover:bg-foreground/10"
+                  onClick={() => {
+                    setCyrillicText((prev) => prev + " " + latinText);
+                    setLatinText("");
+                  }}
+                >
+                  {latinText}
+                </p>
+              </div>
+            )}
           </div>
 
           <p className="font-ibm-plex-sans font-medium text-sm text-foreground/60">
