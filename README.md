@@ -2,8 +2,13 @@
 
 A fast and free transliteration tool for converting Latin text to Ukrainian Cyrillic.
 
+<picture>
+<source srcset="/public/site-preview.jpg" media="(orientation: portrait)" />
+<img src="/public/site-preview.jpg" alt="Screenshot of the website in action" />
+</picture>
+
 ## How to access
-Use the live demo at the bottom of the README (try typing "shaxy" in the English input and watch it change to "шахи", the word for "chess" in Ukrainian). You can see the full list of transliterations in the lib/transliteration-word-map.ts file
+Use the live demo at the bottom of the README (try typing "shaxy" in the English input and watch it change to "шахи", the word for "chess" in Ukrainian). You can see the full list of transliterations in the `lib/transliteration-word-map.ts` file
 ### OR
 - Download the project files as a `.ZIP` or clone the repo using `git clone https://github.com/Matthew-Seaber/ukrillic.git` in your terminal
 - Run `bun install` to install the required dependencies
