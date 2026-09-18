@@ -17,40 +17,41 @@ export default function Home() {
   );
   const [cyrillicText, setCyrillicText] = useState("");
 
-  const selectTransliterationOption = useCallback(() => {
-    const selectedOption = transliterationOptions[selectedOptionIndex ?? 0];
+  const selectTransliterationOption = useCallback(
+    (word?: string) => {
+      let selectedOption: string;
 
-    if (!selectedOption) return;
+      if (!word) {
+        selectedOption = transliterationOptions[selectedOptionIndex ?? 0];
+      } else {
+        selectedOption = word;
+      }
 
-    setCyrillicText((prev) =>
-      prev === "" ? selectedOption : prev + " " + selectedOption,
-    );
+      if (!selectedOption) return;
 
-    setLatinText("");
-    setTransliterationOptions([]);
-    setSelectedOptionIndex(null);
-  }, [transliterationOptions, selectedOptionIndex]);
+      setCyrillicText((prev) =>
+        prev === "" ? selectedOption : prev + " " + selectedOption,
+      );
 
-  useEffect(() => {
-    if (!latinText.trim()) {
+      setLatinText("");
       setTransliterationOptions([]);
       setSelectedOptionIndex(null);
-      return;
-    }
-
-    const cyrillicOptions = transliterateWord(latinText.trim());
-    setTransliterationOptions(cyrillicOptions);
-    setSelectedOptionIndex(0);
-  }, [latinText]);
+    },
+    [transliterationOptions, selectedOptionIndex],
+  );
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       const activeElement = document.activeElement as HTMLElement;
 
       if (
-        activeElement.tagName === "INPUT" ||
+        activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA" ||
         activeElement.isContentEditable
       ) {
+        if (document.activeElement?.id !== "latin-input") {
+          return;
+        }
+
         if (event.key === "Enter" || event.key === "Tab" || event.key === " ") {
           event.preventDefault();
 
@@ -100,7 +101,7 @@ export default function Home() {
         </h2>
       </div>
 
-      <div className="relative w-full min-h-84 grid grid-cols-2 border rounded-2xl overflow-hidden">
+      <div className="relative w-full min-h-84 grid grid-cols-2 border rounded-2xl overflow-hidden shadow-lg">
         <div className="flex flex-col justify-between gap-4 border-r p-8">
           <div className="flex flex-col gap-4">
             <h3 className="font-ibm-plex-sans font-semibold text-lg text-primary">
@@ -112,19 +113,33 @@ export default function Home() {
               type="text"
               placeholder="Enter text here..."
               value={latinText}
-              onChange={(e) => setLatinText(e.target.value)}
+              onChange={(e) => {
+                setLatinText(e.target.value);
+
+                if (!e.target.value.trim()) {
+                  setTransliterationOptions([]);
+                  setSelectedOptionIndex(null);
+                  return;
+                }
+
+                const cyrillicOptions = transliterateWord(
+                  e.target.value.trim(),
+                );
+                setTransliterationOptions(cyrillicOptions);
+                setSelectedOptionIndex(0);
+              }}
               className="text-3xl pb-1 focus:border-b-4 border-primary outline-none"
             />
 
             {latinText && (
-              <div className="w-96 absolute flex flex-col gap-2 font-ibm-plex-sans font-semibold">
-                <div className="w-full flex flex-col gap-1">
+              <div className="w-96 absolute top-32 p-2 bg-background border rounded-md flex flex-col gap-1 font-ibm-plex-sans font-semibold shadow-lg z-20">
+                <div className="w-full flex flex-col">
                   {transliterationOptions.map((option, index) => (
                     <p
                       key={index}
                       className={`w-full p-2 rounded-md cursor-default hover:bg-primary/20 ${index === selectedOptionIndex ? "bg-primary/40" : ""}`}
                       onClick={() => {
-                        selectTransliterationOption();
+                        selectTransliterationOption(option);
                       }}
                     >
                       {option}
@@ -135,7 +150,7 @@ export default function Home() {
                 <Separator />
 
                 <p
-                  className="w-full p-2 text-foreground/40 rounded-md cursor-default hover:bg-foreground/10"
+                  className="w-full p-2 text-foreground/40 rounded-md cursor-default hover:bg-primary/20"
                   onClick={() => {
                     setCyrillicText((prev) =>
                       prev === "" ? latinText : " " + latinText,
@@ -163,12 +178,11 @@ export default function Home() {
             UKRAINIAN (CYRILLIC)
           </h3>
 
-          <input
-            type="text"
+          <textarea
             placeholder="..."
             value={cyrillicText}
             onChange={(e) => setCyrillicText(e.target.value)}
-            className="text-3xl outline-none"
+            className="h-full text-3xl outline-none resize-none"
           />
         </div>
       </div>

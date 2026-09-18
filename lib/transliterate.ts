@@ -32,9 +32,29 @@ export function transliterateWord(word: string): string[] {
       for (const nextOption of nextOptions) {
         options.push({
           text: cyrillic + nextOption.text,
-          score: nextOption.score + latin.length * 10, // Gives more weighting to longer mappings (e.g. shch over sh or s)
+          score: nextOption.score + latin.length * 10, // Gives more weighting to longer mappings (e.g. shch over s)
         });
       }
     }
+
+    const uniqueOptionsMap = new Map<string, CyrillicWordOption>();
+
+    for (const option of options) {
+      const existingOption = uniqueOptionsMap.get(option.text);
+
+      if (!existingOption || option.score > existingOption.score) {
+        uniqueOptionsMap.set(option.text, option);
+      }
+    }
+
+    const sortedOptions = [...uniqueOptionsMap.values()].sort(
+      (a, b) => b.score - a.score,
+    );
+
+    memo.set(index, sortedOptions);
+
+    return sortedOptions;
   }
+
+  return recursivelyFindOptions(0).map((option) => option.text);
 }

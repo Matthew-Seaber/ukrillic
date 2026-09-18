@@ -11,10 +11,10 @@ function Navbar() {
     <nav className="bg-background/80 backdrop-blur-sm border rounded-3xl sticky mt-4 mx-4 p-5 sm:p-6 z-20">
       <div className="mx-auto flex items-center justify-between gap-4">
         <h1
-          className="font-ibm-plex-sans font-semibold text-xl sm:text-3xl text-primary cursor-pointer"
+          className="font-ibm-plex-sans font-semibold text-xl sm:text-2xl text-primary cursor-pointer"
           onClick={() => router.push("/")}
         >
-          Ukrillic
+          UKRILLIC
         </h1>
 
         <Button
