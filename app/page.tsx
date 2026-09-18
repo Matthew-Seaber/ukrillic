@@ -4,8 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 
 import { transliterateWord } from "@/lib/transliterate";
 
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ArrowRight } from "lucide-react";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
+import { ArrowRight, Check, Copy, Keyboard } from "lucide-react";
 
 export default function Home() {
   const [latinText, setLatinText] = useState("");
@@ -16,6 +18,7 @@ export default function Home() {
     null,
   );
   const [cyrillicText, setCyrillicText] = useState("");
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const selectTransliterationOption = useCallback(
     (word?: string) => {
@@ -43,9 +46,13 @@ export default function Home() {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       const activeElement = document.activeElement as HTMLElement;
+      const inputBox = document.getElementById(
+        "latin-input",
+      ) as HTMLInputElement | null;
 
       if (
-        activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA" ||
+        activeElement.tagName === "INPUT" ||
+        activeElement.tagName === "TEXTAREA" ||
         activeElement.isContentEditable
       ) {
         if (document.activeElement?.id !== "latin-input") {
@@ -70,14 +77,16 @@ export default function Home() {
               ? 0
               : Math.min(prev + 1, transliterationOptions.length - 1),
           );
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+
+          setLatinText("");
+          inputBox?.blur();
         }
 
         return;
       }
 
-      const inputBox = document.getElementById(
-        "latin-input",
-      ) as HTMLInputElement | null;
       inputBox?.focus();
     }
 
@@ -111,6 +120,7 @@ export default function Home() {
             <input
               id="latin-input"
               type="text"
+              spellCheck={false}
               placeholder="Enter text here..."
               value={latinText}
               onChange={(e) => {
@@ -174,17 +184,53 @@ export default function Home() {
         </div>
 
         <div className="flex flex-col gap-4 p-8">
-          <h3 className="font-ibm-plex-sans font-semibold text-lg text-primary">
-            UKRAINIAN (CYRILLIC)
-          </h3>
+          <div className="flex flex-row items-center justify-between gap-4">
+            <h3 className="font-ibm-plex-sans font-semibold text-lg text-primary">
+              UKRAINIAN (CYRILLIC)
+            </h3>
+
+            <Button
+              size="icon"
+              variant="link"
+              disabled={!cyrillicText}
+              onClick={() => {
+                if (copySuccess) return;
+
+                navigator.clipboard.writeText(cyrillicText);
+                setCopySuccess(true);
+
+                setTimeout(() => setCopySuccess(false), 3000);
+              }}
+            >
+              {copySuccess ? (
+                <Check className="size-5" />
+              ) : (
+                <Copy className="size-5" />
+              )}
+            </Button>
+          </div>
 
           <textarea
             placeholder="..."
+            spellCheck={false}
             value={cyrillicText}
             onChange={(e) => setCyrillicText(e.target.value)}
             className="h-full text-3xl outline-none resize-none"
           />
         </div>
+      </div>
+
+      <div className="flex flex-row items-center justify-center gap-2 py-3 px-4 bg-foreground/1 text-sm rounded-2xl border shadow-md">
+        <Keyboard strokeWidth={1.75} className="size-5" />
+
+        <p>
+          Use{" "}
+          <KbdGroup>
+            <Kbd>↑</Kbd>
+            <Kbd>↓</Kbd>
+          </KbdGroup>{" "}
+          to navigate options, and <Kbd>Enter</Kbd> to select
+        </p>
       </div>
     </div>
   );
